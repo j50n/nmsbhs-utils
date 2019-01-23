@@ -4,7 +4,8 @@
   "description": "NMSBlackHoleSuns utilities.",
   "main": "index.js",
   "scripts": {
-    "test": "test-tbd.sh"
+    "test": "test-tbd.sh",
+    "build": "tsc && chmod +x ./dest/*.js"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,11 @@
   },
   "homepage": "https://github.com/j50n/nmsbhs-utils#readme",
   "dependencies": {
+    "@types/csv-parse": "1.1.11",
+    "@types/event-stream": "3.3.34",
     "@types/node": "10.12.18",
-    "commander": "2.19.0"
+    "commander": "2.19.0",
+    "csv-parse": "4.3.1",
+    "event-stream": "4.0.1"
   }
 }
