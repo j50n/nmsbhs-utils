@@ -1,0 +1,23 @@
+{
+  "name": "nmsbhs-utils",
+  "version": "0.0.0",
+  "description": "NMSBlackHoleSuns utilities.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test-tbd.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/j50n/nmsbhs-utils.git"
+  },
+  "author": "Jason Smith",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/j50n/nmsbhs-utils/issues"
+  },
+  "homepage": "https://github.com/j50n/nmsbhs-utils#readme",
+  "dependencies": {
+    "@types/node": "10.12.18",
+    "commander": "2.19.0"
+  }
+}
