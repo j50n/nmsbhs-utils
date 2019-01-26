@@ -12,7 +12,7 @@ test("coordinates parse", t => {
 
 test("radial", t => {
   t.true(
-    Math.abs(coordinates("0FFF:007F:0FFF:0079").radial2 - 315) < 0.1,
+    Math.abs(coordinates("0FFF:007F:0FFF:0079").radial - 315) < 0.1,
     "finds the correct radial"
   );
 
@@ -21,7 +21,7 @@ test("radial", t => {
 
 test("distance", t => {
   t.true(
-    Math.abs(coordinates("0FFF:007F:0FFF:0079").dist2 - 2896.3) < 1,
+    Math.abs(coordinates("0FFF:007F:0FFF:0079").dist - 2896.3) < 1,
     "calculates the correct distance"
   );
 

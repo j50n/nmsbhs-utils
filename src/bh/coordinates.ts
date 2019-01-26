@@ -1,7 +1,7 @@
 type Coords = [number, number, number, number];
 const reCoord = /^([0-9a-f]{1,4}):([0-9a-f]{1,4}):([0-9a-f]{1,4}):([0-9a-f]{1,4})$/i;
 
-export function coordinates(text: string): Coordinates {
+function coordinates(text: string): Coordinates {
   const parts = reCoord.exec(text);
   if (parts == null) {
     throw new SyntaxError(`not valid galactic coordinates: '${text}'`);
@@ -11,7 +11,7 @@ export function coordinates(text: string): Coordinates {
   }
 }
 
-export class Coordinates {
+class Coordinates {
   constructor(
     public readonly x: number,
     public readonly y: number,
@@ -53,11 +53,23 @@ export class Coordinates {
     }
   }
 
-  public get dist2(): number {
+  public toString() {
+    function f(v: number): string {
+      let n = v.toString(16).toUpperCase();
+      while (n.length < 4) {
+        n = `0${n}`;
+      }
+      return n;
+    }
+
+    return `${f(this.x)}:${f(this.y)}:${f(this.z)}:${f(this.system)}`;
+  }
+
+  public get dist(): number {
     return Math.sqrt((this.x - 0x7ff) ** 2 + (this.z - 0x7ff) ** 2);
   }
 
-  public get radial2(): number {
+  public get radial(): number {
     let r = Math.atan2(-1 * (this.z - 0x7ff), this.x - 0x7ff);
     if (r < 0) {
       r = r + 2 * Math.PI;
@@ -66,25 +78,38 @@ export class Coordinates {
   }
 }
 
-export enum Platform {
+enum Platform {
   PS4 = "PS4",
   PC = "PC",
   XBOX = "XBOX"
 }
 
-export enum Wealth {
+enum Wealth {
   Low = 1,
   Middle = 2,
   High = 3
 }
 
-export class System {
+class System {
   constructor(
-    region: string,
-    system: string,
-    coords: Coordinates,
-    economy: Wealth
+    public readonly region: string,
+    public readonly system: string,
+    public readonly coords: Coordinates,
+    public readonly economy: Wealth
   ) {
     // yes empty
   }
 }
+
+class Hop {
+  constructor(
+    public readonly platform: Platform,
+    public readonly galaxy: string,
+    public readonly blackhole: System,
+    public readonly exit: System
+  ) {
+    // todo
+  }
+}
+
+export { coordinates, Coordinates, Hop, System, Wealth, Platform };
