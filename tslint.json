@@ -2,6 +2,8 @@
   "extends": ["tslint:recommended"],
   "rules": {
     "no-console": false,
-    "trailing-comma": [false]
+    "trailing-comma": [false],
+    "arrow-parens": false,
+    "max-classes-per-file": [true, 5]
   }
 }
