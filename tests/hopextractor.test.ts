@@ -6,6 +6,7 @@ test("hop parse", t => {
   const testrow: string[] = [
     "PS4",
     "01 Euclid",
+    "2",
     "Beykova Nebula",
     "Ekielis XI",
     "0C6F:007B:0EFD:0079",
@@ -16,9 +17,9 @@ test("hop parse", t => {
     "Yellow",
     "Korvax",
     "3",
-    "2",
-    "  848,155 ",
+    "  848,020 ",
     "Travels to:",
+    "1",
     "Mopdorf",
     "Unecho",
     "0BAF:0080:0F5A:0004",
@@ -29,9 +30,8 @@ test("hop parse", t => {
     "Yellow",
     "Vy'keen",
     "2",
-    "1",
-    "  842,493 ",
-    "  (5,662)",
+    "  842,551 ",
+    "  (5,469)",
     "Hermit-5",
     ""
   ];

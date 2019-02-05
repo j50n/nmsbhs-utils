@@ -1,3 +1,4 @@
+import deepEqual from "deep-equal";
 import test from "tape";
 import { coordinates, Coordinates } from "../src/bh/coordinates";
 
@@ -23,6 +24,26 @@ test("distance", t => {
   t.true(
     Math.abs(coordinates("0FFF:007F:0FFF:0079").dist - 2896.3) < 1,
     "calculates the correct distance"
+  );
+
+  t.end();
+});
+
+test("equality", t => {
+  t.true(
+    deepEqual(
+      coordinates("0FFF:007F:0FFF:0079"),
+      coordinates("0FFF:007F:0FFF:0079")
+    ),
+    "correctly detect these coordinates are the same"
+  );
+
+  t.false(
+    deepEqual(
+      coordinates("0FFF:007F:0FFF:0078"),
+      coordinates("0FFF:007F:0FFF:0079")
+    ),
+    "correctly detect these coordinates are different"
   );
 
   t.end();

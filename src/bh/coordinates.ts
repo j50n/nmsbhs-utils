@@ -65,8 +65,13 @@ class Coordinates {
     return `${f(this.x)}:${f(this.y)}:${f(this.z)}:${f(this.system)}`;
   }
 
+  /** Distance to center. */
   public get dist(): number {
     return Math.sqrt((this.x - 0x7ff) ** 2 + (this.z - 0x7ff) ** 2);
+  }
+
+  public dist2(other: Coordinates): number {
+    return Math.sqrt((this.x - other.x) ** 2 + (this.z - other.z) ** 2);
   }
 
   public get radial(): number {
@@ -109,6 +114,46 @@ class Hop {
     public readonly exit: System
   ) {
     // todo
+  }
+
+  public get radialDist(): number {
+    const bd = this.blackhole.coords.dist;
+    const ed = this.exit.coords.dist;
+
+    return Math.abs(bd - ed);
+  }
+
+  /**
+   * Calculate the axial distance travelled in degrees from the black-hole to the
+   * exit. This will be -180 to +180 degrees.
+   */
+  public get axialDist(): number {
+    const br = this.blackhole.coords.radial;
+    const er = this.exit.coords.radial;
+
+    let r = br - er;
+    while (r < 0) {
+      r = r + 180;
+    }
+    while (r > 180) {
+      r = r - 180;
+    }
+
+    if (br < 180) {
+      if (er > br && er < br + 180) {
+        r = r;
+      } else {
+        r = -r;
+      }
+    } else {
+      if (er < br && er > br - 180) {
+        r = -r;
+      } else {
+        r = r;
+      }
+    }
+
+    return r;
   }
 }
 

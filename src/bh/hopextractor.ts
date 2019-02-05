@@ -18,17 +18,17 @@ const idxPlatform = 0;
 const idxGalaxy = 1;
 
 const blackHoleIdxs: ISystemIndexes = {
-  idxCoords: 4,
-  idxEconomy: 12,
-  idxRegion: 2,
-  idxSystem: 3
+  idxCoords: 5,
+  idxEconomy: 2,
+  idxRegion: 3,
+  idxSystem: 4
 };
 
 const exitIdxs: ISystemIndexes = {
-  idxCoords: 17,
-  idxEconomy: 25,
-  idxRegion: 15,
-  idxSystem: 16
+  idxCoords: 18,
+  idxEconomy: 15,
+  idxRegion: 16,
+  idxSystem: 17
 };
 
 class SystemDef {
@@ -40,11 +40,11 @@ class SystemDef {
   }
 
   public get regionName(): string {
-    return this.row[this.indexes.idxRegion];
+    return this.row[this.indexes.idxRegion].trim();
   }
 
   public get systemName(): string {
-    return this.row[this.indexes.idxSystem];
+    return this.row[this.indexes.idxSystem].trim();
   }
 
   public get coordinates(): Coordinates {
@@ -74,6 +74,15 @@ function extractHop(row: string[]): Hop {
   return new Hop(platform, galaxy, blackHole, exit);
 }
 
-export { extractHop };
+function isValidHop(hop: Hop): boolean {
+  const movesTowardCenter = hop.blackhole.coords.dist > hop.exit.coords.dist;
+  const isInsideGalacticCircle = hop.blackhole.coords.dist <= 0x7ff;
+  const traveledANormalDistance = hop.radialDist * 400 <= 16000;
 
-// export function extractBlackhole(row: string[]): System {}
+  return (
+    movesTowardCenter &&
+    (isInsideGalacticCircle ? traveledANormalDistance : true)
+  );
+}
+
+export { extractHop, isValidHop };
