@@ -29,6 +29,7 @@
     "csv-parse": "4.3.1",
     "deep-equal": "1.0.1",
     "event-stream": "4.0.1",
+    "immutable": "4.0.0-rc.12",
     "typescript": "3.2.4"
   },
   "devDependencies": {

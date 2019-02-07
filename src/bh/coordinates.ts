@@ -101,9 +101,7 @@ class System {
     public readonly system: string,
     public readonly coords: Coordinates,
     public readonly economy: Wealth
-  ) {
-    // yes empty
-  }
+  ) {}
 }
 
 class Hop {
@@ -112,10 +110,11 @@ class Hop {
     public readonly galaxy: string,
     public readonly blackhole: System,
     public readonly exit: System
-  ) {
-    // todo
-  }
+  ) {}
 
+  /**
+   * Absolute distance moved toward the center from the black-hole to the exit.
+   */
   public get radialDist(): number {
     const bd = this.blackhole.coords.dist;
     const ed = this.exit.coords.dist;
