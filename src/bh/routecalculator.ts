@@ -99,9 +99,9 @@ class RouteCalculator {
         const [a, b] = jump;
         if (this.isSameStar(a, b)) {
           return 0;
-        } else if (this.isSameRegion(a, b)) {
+        } else if (this.isSameRegion(a, b) && b.system === 0x79) {
           return 1;
-        } else if (this.isAdjacentRegion(a, b)) {
+        } else if (this.isAdjacentRegion(a, b) && b.system === 0x79) {
           return 1 + this.adjacentPenalty;
         } else {
           return this.calcExpectedJumps(a, b) + this.waypointPenalty;

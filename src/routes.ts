@@ -42,12 +42,12 @@ const allHops = validHops()
 
 const destination = newLennon;
 
-const best = allBases
+const best: TripAdvisor = allBases
   .map(start => {
     return new TripAdvisor(new RouteCalculator(allHops), start, destination);
   })
   .minBy(ta => {
     return ta.route().score;
-  });
+  })!;
 
-best!.explain();
+best.explain();
