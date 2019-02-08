@@ -4329,7 +4329,7 @@ export const blackHoleData: string[][] = [
       "1",
       "Sayardhib",
       "Miuragiu",
-      "0B39:007C:01FD:002D",
+      "0B39:007C:01FD:0079",
       "2873",
       "124",
       "509",

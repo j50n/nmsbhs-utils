@@ -102,6 +102,10 @@ class System {
     public readonly coords: Coordinates,
     public readonly economy: Wealth
   ) {}
+
+  public get label(): string {
+    return `${this.system}@${this.region}`;
+  }
 }
 
 class Hop {

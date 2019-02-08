@@ -2,6 +2,7 @@ import { coordinates, Coordinates, Hop, Platform } from "./bh/coordinates";
 import { validHops } from "./bh/utils";
 import { RouteCalculator, IRoute } from "./bh/routecalculator";
 import { List } from "immutable";
+import { TripAdvisor } from "./bh/tripadvisor";
 import util from "util";
 
 const POINewLennon = coordinates("042F:0079:0D55:006A");
@@ -25,24 +26,24 @@ const allHops = validHops()
   .filter(hop => hop.platform === platform)
   .filter(hop => hop.galaxy === galaxy);
 
-const route = List([
-  POIHermitsHome,
-  POIHermitsHaulers,
-  POIHermitsHaulersAndTanSquid,
-  POIHermitsHaulersAtTheHub,
-  POIHermitsLostDiplos,
-  POIGekShrine700K,
-  POIVykeenShrine800K,
-  POIHermitsBigBoyBase,
-  POIGlitchingMoonMine
-])
-  .map(start => {
-    const calc = new RouteCalculator(allHops);
-    const r = calc.findRoute(start, POIHusker);
-    console.log(`--> ${r.score} ${r.hops.size}`);
-    return r;
-  })
-  .minBy(r => r.score)!;
+// const route = List([
+//   POIHermitsHome,
+//   POIHermitsHaulers,
+//   POIHermitsHaulersAndTanSquid,
+//   POIHermitsHaulersAtTheHub,
+//   POIHermitsLostDiplos,
+//   POIGekShrine700K,
+//   POIVykeenShrine800K,
+//   POIHermitsBigBoyBase,
+//   POIGlitchingMoonMine
+// ])
+//   .map(start => {
+//     const calc = new RouteCalculator(allHops);
+//     const r = calc.findRoute(start, POIHusker);
+//     console.log(`--> ${r.score} ${r.hops.size}`);
+//     return r;
+//   })
+//   .minBy(r => r.score)!;
 
 // console.error(`distance is ${POILuberndPloygi.dist2(POINewLennon) * 400} LY`);
 // console.error(`jumps are ${rc.calcJumps(POILuberndPloygi, POINewLennon)}`);
@@ -65,23 +66,31 @@ const route = List([
 
 const rc = new RouteCalculator(allHops);
 
-if (route.hops.isEmpty()) {
-  console.log(
-    `The direct route is the best route. ${rc.calcExpectedJumps(
-      route.start,
-      route.destination
-    )}`
-  );
-} else {
-  rc.convertHopsToRoutes(route.start, route.destination, route.hops).forEach(
-    (route, index) => {
-      const [a, b] = route;
-      console.log(
-        `jump ${a.dist2(b) * 400} LY (${rc.calcExpectedJumps(
-          a,
-          b
-        )} jumps) from ${a.toString()} to ${b.toString()}`
-      );
-    }
-  );
-}
+// if (route.hops.isEmpty()) {
+//   console.log(
+//     `The direct route is the best route. ${rc.calcExpectedJumps(
+//       route.start,
+//       route.destination
+//     )}`
+//   );
+// } else {
+//   rc.convertHopsToRoutes(route.start, route.destination, route.hops).forEach(
+//     (route, index) => {
+//       const [a, b] = route;
+//       console.log(
+//         `jump ${a.dist2(b) * 400} LY (${rc.calcExpectedJumps(
+//           a,
+//           b
+//         )} jumps) from ${a.toString()} to ${b.toString()}`
+//       );
+//     }
+//   );
+// }
+
+const advisor = new TripAdvisor(
+  new RouteCalculator(allHops),
+  { label: "Vykeen Shrine", coords: POIVykeenShrine800K },
+  { label: "New Lennon", coords: POINewLennon }
+);
+
+advisor.explain();
