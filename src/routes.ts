@@ -1,23 +1,37 @@
-import { coordinates, Coordinates, Hop, Platform } from "./bh/coordinates";
-import { validHops } from "./bh/utils";
-import { RouteCalculator, IRoute } from "./bh/routecalculator";
 import { List } from "immutable";
-import { TripAdvisor } from "./bh/tripadvisor";
-import util from "util";
 
-const POINewLennon = coordinates("042F:0079:0D55:006A");
-const POILuberndPloygi = coordinates("0AD5:007C:03AB:0065");
-const POIHusker = coordinates("0872:007C:0108:01F1");
-const POIHermitsHome = coordinates("0164:007E:0596:0021");
-const POIHermitsLostDiplos = coordinates("0163:007E:0595:01DE");
-const POIGekShrine700K = coordinates("0B39:007C:01FD:0079");
-const POIVykeenShrine800K = coordinates("0DCD:0082:0D18:0010");
-const POIHermitsHaulersAndTanSquid = coordinates("0164:007F:0596:01B3");
-const POIHermitsHaulers = coordinates("0164:007E:0596:007A");
-const POIHermitsHaulersAtTheHub = coordinates("042F:0078:0D55:003C");
-const POIHermitsBigBoyBase = coordinates("0476:0080:0D42:01EB");
-const POIGlitchingMoonMine = coordinates("00A2:0080:0550:00FD");
-const POIExplorers = coordinates("0165:007E:0595:010F");
+import { coordinates, Platform } from "./bh/coordinates";
+import { RouteCalculator } from "./bh/routecalculator";
+import { IEndPoint, TripAdvisor } from "./bh/tripadvisor";
+import { validHops } from "./bh/utils";
+
+/*
+ * Demonstrates finding best route when there are multiple possible starting points.
+ */
+
+//const POILuberndPloygi = coordinates("0AD5:007C:03AB:0065");
+//const POIHusker = coordinates("0872:007C:0108:01F1");
+
+const allBases: List<IEndPoint> = List([
+  { label: "Hermit's Home", coords: coordinates("0164:007E:0596:0021") },
+  { label: "Hermit's Lost Diplos", coords: coordinates("0163:007E:0595:01DE") },
+  { label: "Gek Shrine [700K]", coords: coordinates("0B39:007C:01FD:0079") },
+  { label: "Vykeen Shrine [800k]", coords: coordinates("0DCD:0082:0D18:0010") },
+  {
+    coords: coordinates("042F:0078:0D55:003C"),
+    label: "Hermit's Haulers at the Hub"
+  },
+  {
+    coords: coordinates("0476:0080:0D42:01EB"),
+    label: "Hermit's Big Boy Base"
+  },
+  { label: "Glitching Moon Mine", coords: coordinates("00A2:0080:0550:00FD") }
+]);
+
+const newLennon: IEndPoint = {
+  coords: coordinates("042F:0079:0D55:006A"),
+  label: "New Lennon"
+};
 
 const platform = Platform.PS4;
 const galaxy = "01 Euclid";
@@ -26,71 +40,14 @@ const allHops = validHops()
   .filter(hop => hop.platform === platform)
   .filter(hop => hop.galaxy === galaxy);
 
-// const route = List([
-//   POIHermitsHome,
-//   POIHermitsHaulers,
-//   POIHermitsHaulersAndTanSquid,
-//   POIHermitsHaulersAtTheHub,
-//   POIHermitsLostDiplos,
-//   POIGekShrine700K,
-//   POIVykeenShrine800K,
-//   POIHermitsBigBoyBase,
-//   POIGlitchingMoonMine
-// ])
-//   .map(start => {
-//     const calc = new RouteCalculator(allHops);
-//     const r = calc.findRoute(start, POIHusker);
-//     console.log(`--> ${r.score} ${r.hops.size}`);
-//     return r;
-//   })
-//   .minBy(r => r.score)!;
+const destination = newLennon;
 
-// console.error(`distance is ${POILuberndPloygi.dist2(POINewLennon) * 400} LY`);
-// console.error(`jumps are ${rc.calcJumps(POILuberndPloygi, POINewLennon)}`);
+const best = allBases
+  .map(start => {
+    return new TripAdvisor(new RouteCalculator(allHops), start, destination);
+  })
+  .minBy(ta => {
+    return ta.route().score;
+  });
 
-// const route = rc.findRoute(POIHermitsLostDiplos, POIHusker);
-
-// console.log(`I TRIED ${rc.routesConsidered} COMBINATIONS.`);
-// console.log(`DIFFICULTY: ${route.score}`);
-// console.log(util.inspect(route.hops.toArray(), { depth: 5 }));
-
-// console.log(
-//   `start at ${route.start.toString()}, ${route.start.dist * 400} LY @ ${
-//     route.start.radial
-//   }`
-// );
-// console.log(
-//   `destination at ${route.destination.toString()}, ${route.destination.dist *
-//     400} LY @ ${route.destination.radial}`
-// );
-
-const rc = new RouteCalculator(allHops);
-
-// if (route.hops.isEmpty()) {
-//   console.log(
-//     `The direct route is the best route. ${rc.calcExpectedJumps(
-//       route.start,
-//       route.destination
-//     )}`
-//   );
-// } else {
-//   rc.convertHopsToRoutes(route.start, route.destination, route.hops).forEach(
-//     (route, index) => {
-//       const [a, b] = route;
-//       console.log(
-//         `jump ${a.dist2(b) * 400} LY (${rc.calcExpectedJumps(
-//           a,
-//           b
-//         )} jumps) from ${a.toString()} to ${b.toString()}`
-//       );
-//     }
-//   );
-// }
-
-const advisor = new TripAdvisor(
-  new RouteCalculator(allHops),
-  { label: "Vykeen Shrine", coords: POIVykeenShrine800K },
-  { label: "New Lennon", coords: POINewLennon }
-);
-
-advisor.explain();
+best!.explain();
