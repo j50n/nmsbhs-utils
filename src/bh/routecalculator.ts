@@ -161,7 +161,7 @@ class RouteCalculator {
         if (!hops.isEmpty()) {
           dest = (hops.first() as Hop).blackhole.coords;
         }
-        return this.closestByExit(dest).slice(0, 50);
+        return this.closestByExit(dest).slice(0, 20);
       })();
 
       const potentialRoutes: IRoute[] = closest.map(hop => {

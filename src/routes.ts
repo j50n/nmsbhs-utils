@@ -33,6 +33,11 @@ const newLennon: IEndPoint = {
   label: "New Lennon"
 };
 
+const dopeLordConfederacy: IEndPoint = {
+  coords: coordinates("0804:007B:0804:008B"),
+  label: "The Dopelord Confederacy"
+};
+
 const platform = Platform.PS4;
 const galaxy = "01 Euclid";
 
@@ -40,7 +45,7 @@ const allHops = validHops()
   .filter(hop => hop.platform === platform)
   .filter(hop => hop.galaxy === galaxy);
 
-const destination = newLennon;
+const destination = dopeLordConfederacy;
 
 const best: TripAdvisor = allBases
   .map(start => {
