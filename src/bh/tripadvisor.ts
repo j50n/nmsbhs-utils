@@ -105,7 +105,7 @@ class TripAdvisor {
           );
         }
       } else {
-        const distance = Math.floor(a.coords.dist2(b.coords));
+        const distance = Math.floor(a.coords.dist2(b.coords) * 400);
         const expectedJumps = this.rc.calcExpectedJumps(a.coords, b.coords);
         console.log(
           `${i}. ${this.desc(a)} -> ${this.desc(

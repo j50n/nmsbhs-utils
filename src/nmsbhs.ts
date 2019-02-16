@@ -10,12 +10,38 @@ interface IRouteOptions {
   destination: Coordinates;
 }
 
-const platform = Platform.PS4;
-const galaxy = "01 Euclid";
+interface IJumpsOptions {
+  start: Coordinates;
+  destination: Coordinates;
+}
+
+const platform = Platform.PC;
+const galaxy = "10 Eissentam";
+
+console.log(`PLATFORM: ${platform}`);
+console.log(`GALAXY: ${galaxy}`);
 
 const allHops = validHops()
   .filter(hop => hop.platform === platform)
   .filter(hop => hop.galaxy === galaxy);
+
+console.log(`MATCHED HOPS: ${allHops.length}`);
+
+commander
+  .command("jumps")
+  .option("-s, --start [value]", "start coordinates", coordinates)
+  .option("-d, --destination [value]", "destination coordinates", coordinates)
+  .action((options: IJumpsOptions) => {
+    const rc = new RouteCalculator(allHops);
+    console.log(
+      `jumps is ${rc.calcExpectedJumps(options.start, options.destination)}`
+    );
+    console.log(
+      `distance is ${Math.floor(
+        options.start.dist2(options.destination) * 400
+      )} LY`
+    );
+  });
 
 commander
   .command("route")
