@@ -1,39 +1,45 @@
 {
-  "name": "nmsbhs-utils",
-  "version": "0.0.0",
-  "description": "NMSBlackHoleSuns utilities.",
-  "main": "index.js",
-  "scripts": {
-    "test": "ts-node ./node_modules/tape/bin/tape ./tests/**/*.ts",
-    "build": "tsc && chmod +x ./dest/*.js",
-    "generate-blackhole-data": "cat ./resources/blackholes.csv | ./dest/parse-bhs.js > ./src/blackholedata.ts",
-    "validate": "npm run build && node dest/validate.js",
-    "generate": "npm run build && npm run generate-blackhole-data && npm run validate"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/j50n/nmsbhs-utils.git"
-  },
-  "author": "Jason Smith",
-  "license": "GPL-3.0-or-later",
-  "bugs": {
-    "url": "https://github.com/j50n/nmsbhs-utils/issues"
-  },
-  "homepage": "https://github.com/j50n/nmsbhs-utils#readme",
-  "dependencies": {
-    "@types/csv-parse": "1.1.11",
-    "@types/deep-equal": "1.0.1",
-    "@types/event-stream": "3.3.34",
-    "@types/node": "10.12.18",
-    "commander": "2.19.0",
-    "csv-parse": "4.3.1",
-    "deep-equal": "1.0.1",
-    "event-stream": "4.0.1",
-    "immutable": "4.0.0-rc.12",
-    "typescript": "3.2.4"
-  },
-  "devDependencies": {
-    "@types/tape": "4.2.33",
-    "tape": "4.9.2"
-  }
+    "name": "nmsbhs-utils",
+    "version": "0.0.0",
+    "description": "NMSBlackHoleSuns utilities.",
+    "main": "index.js",
+    "scripts": {
+        "test": "ts-node ./node_modules/tape/bin/tape ./tests/**/*.ts",
+        "build": "tsc && chmod +x ./dest/*.js",
+        "generate-blackhole-data": "cat ./resources/blackholes.csv | ./dest/parse-bhs.js > ./src/blackholedata.ts",
+        "validate": "npm run build && node dest/validate.js",
+        "generate": "npm run build && npm run generate-blackhole-data && npm run validate"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/j50n/nmsbhs-utils.git"
+    },
+    "author": "Jason Smith",
+    "license": "GPL-3.0-or-later",
+    "bugs": {
+        "url": "https://github.com/j50n/nmsbhs-utils/issues"
+    },
+    "prettier": {
+        "trailingComma": "es5",
+        "tabWidth": 4,
+        "semi": true,
+        "printWidth": 160
+    },
+    "homepage": "https://github.com/j50n/nmsbhs-utils#readme",
+    "dependencies": {
+        "@types/csv-parse": "1.1.11",
+        "@types/deep-equal": "1.0.1",
+        "@types/event-stream": "3.3.34",
+        "@types/node": "10.12.18",
+        "commander": "2.19.0",
+        "csv-parse": "4.3.1",
+        "deep-equal": "1.0.1",
+        "event-stream": "4.0.1",
+        "immutable": "4.0.0-rc.12",
+        "typescript": "3.2.4"
+    },
+    "devDependencies": {
+        "@types/tape": "4.2.33",
+        "tape": "4.9.2"
+    }
 }
