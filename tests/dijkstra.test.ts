@@ -33,8 +33,6 @@ test("DirectedEdge toString", t => {
 });
 
 test("Dijkstra Multipath 1", t => {
-    const allHops = validHops();
-
     const starts: ISystem[] = [
         { label: "Hermit's Home", coords: coordinates("0164:007E:0596:0021") },
         { label: "Hermit's Lost Diplos", coords: coordinates("0163:007E:0595:01DE") },
@@ -48,12 +46,13 @@ test("Dijkstra Multipath 1", t => {
         label: "New Lennon",
     };
 
+    const allHops = validHops();
+
     const t0 = Date.now();
-    dijkstraCalculator(allHops, 2000, "time")
-        .findRoute(starts, dest)
-        .forEach(rt => {
-            console.log(JSON.stringify(rt));
-        });
+    const calc = dijkstraCalculator(allHops, 2000, "time");
+    calc.findRoute(starts, dest).forEach(rt => {
+        console.log(JSON.stringify(rt));
+    });
     const t1 = Date.now();
 
     console.log(`${t1 - t0} milliseconds`);

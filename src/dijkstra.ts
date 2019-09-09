@@ -294,11 +294,11 @@ abstract class DijkstraCalculator {
     }
 
     protected maxTravelRangeLY() {
-        return 200000;
+        return 100000;
     }
 
     protected maxClosest() {
-        return 100;
+        return 50;
     }
 
     protected closest(target: Coordinates, systems: ISystemIndex[]): ISystemIndex[] {
