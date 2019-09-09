@@ -32,7 +32,7 @@ test("DirectedEdge toString", t => {
     t.end();
 });
 
-test("Dijkstra Multipath", t => {
+test("Dijkstra Multipath 1", t => {
     const allHops = validHops();
 
     const starts: ISystem[] = [
@@ -40,6 +40,7 @@ test("Dijkstra Multipath", t => {
         { label: "Hermit's Lost Diplos", coords: coordinates("0163:007E:0595:01DE") },
         { label: "Gek Shrine [700K]", coords: coordinates("0B39:007C:01FD:0079") },
         { label: "Vykeen Shrine [800k]", coords: coordinates("0DCD:0082:0D18:0010") },
+        { label: "Indium Mega-Mart", coords: coordinates("0643:0081:01A1:008A") },
     ];
 
     const dest: ISystem = {
@@ -60,7 +61,7 @@ test("Dijkstra Multipath", t => {
     t.end();
 });
 
-test("Dijkstra Multipath", t => {
+test("Dijkstra Multipath 2", t => {
     const allHops = validHops();
 
     const starts = [{ label: "Xenu's Start", coords: coordinates("038C:007E:039E:0079") }];
