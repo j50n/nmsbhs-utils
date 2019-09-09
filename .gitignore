@@ -60,4 +60,10 @@ typings/
 # next.js build output
 .next
 
-dest
+dist/
+dest/
+prod/
+lib/
+.cache/
+
+work/

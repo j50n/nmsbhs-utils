@@ -1,4 +1,4 @@
-import { Coordinates, coordinates as systemCoords, Hop, Platform, System, Wealth } from "./coordinates";
+import { Coordinates, coordinates as systemCoords, Hop, Platform, System } from "./coordinates";
 
 interface ISystemIndexes {
     idxRegion: number;
@@ -41,30 +41,25 @@ class SystemDef {
         return systemCoords(this.row[this.indexes.idxCoords]);
     }
 
-    public get economy(): Wealth {
-        return parseInt(this.row[this.indexes.idxEconomy], 10);
-    }
-
     public get system(): System {
-        return new System(this.regionName, this.systemName, this.coordinates, this.economy);
+        return new System(this.regionName, this.systemName, this.coordinates);
     }
-}
-
-function extractHop(row: string[]): Hop {
-    const platform: Platform = row[idxPlatform] as Platform;
-    const galaxy: string = row[idxGalaxy];
-    const blackHole: System = new SystemDef(blackHoleIdxs, row).system;
-    const exit: System = new SystemDef(exitIdxs, row).system;
-
-    return new Hop(platform, galaxy, blackHole, exit);
 }
 
 function isValidHop(hop: Hop): boolean {
-    const movesTowardCenter = hop.blackhole.coords.dist > hop.exit.coords.dist;
-    const isInsideGalacticCircle = hop.blackhole.coords.dist <= 0x7ff;
+    const movesTowardCenter = hop.blackhole.coords.dist2Center() > hop.exit.coords.dist2Center();
+    const isInsideGalacticCircle = hop.blackhole.coords.dist2Center() <= 0x7ff;
     const traveledANormalDistance = hop.radialDist * 400 <= 16000;
 
     return movesTowardCenter && (isInsideGalacticCircle ? traveledANormalDistance : true);
 }
 
-export { extractHop, isValidHop };
+type GALAXY_INDEX = number;
+type COORDS = string;
+type REGION = string;
+type SYSTEM = string;
+
+type HOP = [GALAXY_INDEX, Platform, COORDS, REGION, SYSTEM, COORDS, REGION, SYSTEM];
+
+
+export { isValidHop, HOP, GALAXY_INDEX, COORDS, REGION, SYSTEM };

@@ -1,10 +1,23 @@
 {
+    "defaultSeverity": "warning",
     "extends": ["tslint:recommended"],
+    "linterOptions": {
+        "exclude": ["node_modules/**"]
+    },
     "rules": {
-        "max-line-length": [true, 200],
-        "no-console": false,
-        "trailing-comma": [false],
+        "quotemark": [true, "double"],
+        "indent": [true, "spaces", 2],
+        "interface-name": false,
+        "ordered-imports": false,
+        "object-literal-sort-keys": false,
+        "no-consecutive-blank-lines": false,
+        "vue/require-v-for-key": false,
         "arrow-parens": false,
-        "max-classes-per-file": [true, 5]
+        "max-line-length": false,
+        "no-console": false,
+
+        "variable-name": {
+            "options": ["ban-keywords", "check-format", "allow-leading-underscore", "require-const-for-all-caps", "allow-pascal-case"]
+        }
     }
 }

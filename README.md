@@ -1,2 +1,0 @@
-# nmsbhs-utils
-NMSBlackHoleSuns utilities.
