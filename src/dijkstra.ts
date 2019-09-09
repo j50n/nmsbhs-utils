@@ -29,14 +29,14 @@ class DijkstraShortestPathSolver {
         this.adjacencyList = new Array(nodes).fill(null).map(v => new Array(0));
     }
 
-    addEdge(fromNode: number, toNode: number, weight: number): void {
+    public addEdge(fromNode: number, toNode: number, weight: number): void {
         if (weight < 0) {
             throw new RangeError("weight must be >= 0");
         }
         this.adjacencyList[fromNode].push({ node: toNode, weight });
     }
 
-    addBidirEdge(fromNode: number, toNode: number, weight: number): void {
+    public addBidirEdge(fromNode: number, toNode: number, weight: number): void {
         if (weight < 0) {
             throw new RangeError("weight must be >= 0");
         }
@@ -44,7 +44,7 @@ class DijkstraShortestPathSolver {
         this.adjacencyList[toNode].push({ node: fromNode, weight });
     }
 
-    setEdges(node: number, edges: IEdge[]): void {
+    public setEdges(node: number, edges: IEdge[]): void {
         this.adjacencyList[node] = edges;
     }
 
@@ -52,7 +52,7 @@ class DijkstraShortestPathSolver {
      * Calculate shortest paths for all nodes for the given start node.
      * @param startNode The start node.
      */
-    calculateFor(startNode: number): ShortestPaths {
+    public calculateFor(startNode: number): ShortestPaths {
         const weights: number[] = new Array(this.nodes).fill(Infinity);
         weights[startNode] = 0;
 
@@ -70,7 +70,7 @@ class DijkstraShortestPathSolver {
                 if (weight < weights[neighbor.node]) {
                     weights[neighbor.node] = weight;
                     backtrace[neighbor.node] = currentNode;
-                    pq.push({ node: neighbor.node, weight: weight });
+                    pq.push({ node: neighbor.node, weight });
                 }
             });
         }
@@ -86,11 +86,11 @@ class ShortestPaths {
      * Find the shortest path to the given end node.
      * @param endNode The end node.
      */
-    shortestPathTo(endNode: number): number[] {
-        let path = [endNode];
+    public shortestPathTo(endNode: number): number[] {
+        const path = [endNode];
         let lastStep = endNode;
 
-        while (lastStep != this.startNode) {
+        while (lastStep !== this.startNode) {
             path.unshift(this.backtrace[lastStep]);
             lastStep = this.backtrace[lastStep];
         }
@@ -102,7 +102,7 @@ class ShortestPaths {
      * Total weight of the path from the start node to the given end node.
      * @param endNode The end node.
      */
-    totalWeight(endNode: number): number {
+    public totalWeight(endNode: number): number {
         return this.weights[endNode];
     }
 }
@@ -181,15 +181,15 @@ interface ISystemIndex {
 abstract class DijkstraCalculator {
     constructor(public galacticHops: Hop[], public maxJumpRange: number) {}
 
-    abstract blackHoleWeight(): number;
+    public abstract blackHoleWeight(): number;
 
-    abstract sameRegionWeight(): number;
+    public abstract sameRegionWeight(): number;
 
-    abstract adjacentRegionWeight(): number;
+    public abstract adjacentRegionWeight(): number;
 
-    abstract waypointWeight(): number;
+    public abstract waypointWeight(): number;
 
-    routeWeight(a: Coordinates, b: Coordinates): number {
+    public routeWeight(a: Coordinates, b: Coordinates): number {
         if (isSameStar(a, b)) {
             return 0;
         } else if (isSameRegion(a, b)) {
@@ -201,7 +201,7 @@ abstract class DijkstraCalculator {
         }
     }
 
-    findRoute(starts: ISystem[], destination: ISystem): Route[] {
+    public findRoute(starts: ISystem[], destination: ISystem): Route[] {
         /* All nodes; this is the indexed array. */
         const nodes: ISystemIndex[] = [];
 
@@ -242,7 +242,7 @@ abstract class DijkstraCalculator {
              * This prevents ties between shorter and longer paths when edge weights can be 0.
              */
             node.edges.forEach(e => {
-                if (e.weight == 0) {
+                if (e.weight === 0) {
                     e.weight += 0.000001;
                 }
             });
@@ -338,19 +338,19 @@ class DijkstraCalculator4Time extends DijkstraCalculator {
         super(galacticHops, maxJumpRange);
     }
 
-    blackHoleWeight(): number {
+    public blackHoleWeight(): number {
         return 1;
     }
 
-    sameRegionWeight(): number {
+    public sameRegionWeight(): number {
         return 1;
     }
 
-    adjacentRegionWeight(): number {
+    public adjacentRegionWeight(): number {
         return 2;
     }
 
-    waypointWeight(): number {
+    public waypointWeight(): number {
         return 4;
     }
 }
@@ -360,19 +360,19 @@ class DijkstraCalculator4Fuel extends DijkstraCalculator {
         super(galacticHops, maxJumpRange);
     }
 
-    blackHoleWeight(): number {
+    public blackHoleWeight(): number {
         return 0;
     }
 
-    sameRegionWeight(): number {
+    public sameRegionWeight(): number {
         return 1;
     }
 
-    adjacentRegionWeight(): number {
+    public adjacentRegionWeight(): number {
         return 1;
     }
 
-    waypointWeight(): number {
+    public waypointWeight(): number {
         return 0;
     }
 }

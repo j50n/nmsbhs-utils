@@ -15,6 +15,7 @@
         "arrow-parens": false,
         "max-line-length": false,
         "no-console": false,
+        "max-classes-per-file": false,
 
         "variable-name": {
             "options": ["ban-keywords", "check-format", "allow-leading-underscore", "require-const-for-all-caps", "allow-pascal-case"]

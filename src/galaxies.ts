@@ -256,4 +256,4 @@ const galaxies = [
     "Iousongola",
 ];
 
-export {galaxies};
+export { galaxies };

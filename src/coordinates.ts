@@ -43,7 +43,7 @@ class Coordinates {
         return `${f(this.x)}:${f(this.y)}:${f(this.z)}:${f(this.system)}`;
     }
 
-    //[P][SSS][YY][ZZZ][XXX] – (P = Planet Index / S = Star System Index / Y = Height / Z = Width / X = Length)
+    // [P][SSS][YY][ZZZ][XXX] – (P = Planet Index / S = Star System Index / Y = Height / Z = Width / X = Length)
     public galacticCoordinates(planet: number): string {
         if (planet < 0 || planet > 0x0f) {
             throw new RangeError(`illegal planet code: ${planet.toString(16)}`);
@@ -75,7 +75,7 @@ class Coordinates {
     }
 
     /** Distance to center (regions). */
-    dist2Center(): number {
+    public dist2Center(): number {
         return this.dist2(GalacticCenter);
     }
 
@@ -113,23 +113,23 @@ const reCoord4Pattern = `([0-9a-f]{1,4})[:\\s]([0-9a-f]{1,4})[:\\s]([0-9a-f]{1,4
 const reCoordFlat3Pattern = `([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})`;
 const reCoordFlat4Pattern = `([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})`;
 
-const reCoord3 = new RegExp(`^${reCoord3Pattern}$`, "i"); ///^([0-9a-f]{1,4})[\:\s]([0-9a-f]{1,4})[\:\s]([0-9a-f]{1,4})$/i;
-const reCoord4 = new RegExp(`^${reCoord4Pattern}$`, "i"); ///^([0-9a-f]{1,4})[\:\s]([0-9a-f]{1,4})[\:\s]([0-9a-f]{1,4})[\:\s]([0-9a-f]{1,4})$/i;
-const reCoordFlat3 = new RegExp(`^${reCoordFlat3Pattern}$`, "i"); ///^([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})$/i;
-const reCoordFlat4 = new RegExp(`^${reCoordFlat4Pattern}$`, "i"); ///^([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})$/i;
+const reCoord3 = new RegExp(`^${reCoord3Pattern}$`, "i"); // /^([0-9a-f]{1,4})[\:\s]([0-9a-f]{1,4})[\:\s]([0-9a-f]{1,4})$/i;
+const reCoord4 = new RegExp(`^${reCoord4Pattern}$`, "i"); // /^([0-9a-f]{1,4})[\:\s]([0-9a-f]{1,4})[\:\s]([0-9a-f]{1,4})[\:\s]([0-9a-f]{1,4})$/i;
+const reCoordFlat3 = new RegExp(`^${reCoordFlat3Pattern}$`, "i"); // /^([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})$/i;
+const reCoordFlat4 = new RegExp(`^${reCoordFlat4Pattern}$`, "i"); // /^([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})$/i;
 
 const reCoordInput = `^(${reCoord3Pattern})|(${reCoord4Pattern})|(${reCoordFlat3Pattern})|(${reCoordFlat4Pattern})$`.replace(/a-f/g, "a-fA-F");
 
 function coordinates(text: string): Coordinates {
-    function interpret(parts: string[] | null): Coords | null {
-        if (parts === null) {
+    function interpret(pts: string[] | null): Coords | null {
+        if (pts === null) {
             return null;
         } else {
-            let ps = parts.slice(1, 5).map(i => parseInt(i, 16));
-            if (ps.length === 3) {
-                ps.push(0x0000);
+            const pt = pts.slice(1, 5).map(i => parseInt(i, 16));
+            if (pt.length === 3) {
+                pt.push(0x0000);
             }
-            return ps as Coords;
+            return pt as Coords;
         }
     }
 
@@ -160,6 +160,7 @@ enum Platform {
     PC = "PC",
 }
 
+// tslint:disable-next-line: max-classes-per-file
 class System {
     constructor(public readonly region: string, public readonly system: string, public readonly coords: Coordinates) {}
 
@@ -170,7 +171,7 @@ class System {
 }
 
 class Hop {
-    constructor(public readonly platform: Platform, public readonly galaxy: string, public readonly blackhole: System, public readonly exit: System) {}
+    constructor( public readonly blackhole: System, public readonly exit: System) {}
 
     /**
      * Absolute distance moved toward the center from the black-hole to the exit.
