@@ -282,14 +282,15 @@ abstract class DijkstraCalculator {
         }
 
         return sts.map(st => {
-            return new Route(
-                Math.round(shortest.totalWeight(st.index)),
-                shortest
-                    .shortestPathTo(st.index)
-                    .map(node => nodes[node])
-                    .map(node => node.system)
-                    .reverse()
-            );
+            const score = Math.round(shortest.totalWeight(st.index));
+
+            const route = shortest
+                .shortestPathTo(st.index)
+                .map(node => nodes[node])
+                .map(node => node.system)
+                .reverse();
+
+            return new Route(score, route);
         });
     }
 
@@ -319,18 +320,6 @@ abstract class DijkstraCalculator {
             .map(a => a.system)
             .slice(0, this.maxClosest());
     }
-
-    /**
-     * Find the closest stars to the target system, limiting the search to 200,000 ly.
-     * @param target The target system.
-     */
-    // protected closestByExit(target: Coordinates): Hop[] {
-    //     type DistTuple = [number, Hop];
-    //     const hs: DistTuple[] = this.galacticHops
-    //         .filter(h => Math.abs(target.x - h.exit.coords.x) < 200000 / 400 && Math.abs(target.z - h.exit.coords.z) < 100000 / 400)
-    //         .map(h => [target.dist2Sq(h.exit.coords), h] as DistTuple);
-    //     return hs.sort((a, b) => a[0] - b[0]).map(a => a[1]);
-    // }
 }
 
 class DijkstraCalculator4Time extends DijkstraCalculator {
