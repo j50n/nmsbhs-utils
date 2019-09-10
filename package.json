@@ -5,7 +5,7 @@
     "main": "./lib/main/index.js",
     "browser": "./lib/browser/index.js",
     "scripts": {
-        "install": "npm run build",
+        "install": " npm run build-for-browser && npm run build-for-node",
         "clean": "rm -rf ./lib",
         "build-for-browser": "tsc -p ./tsconfig.browser.json",
         "build-for-node": "tsc -p ./tsconfig.main.json",
