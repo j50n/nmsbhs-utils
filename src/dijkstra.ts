@@ -277,9 +277,9 @@ abstract class DijkstraCalculator {
 
         const shortest: ShortestPaths = g.calculateFor(dest.index);
 
-        for (const st of sts) {
-            console.log(`${JSON.stringify(st.system)} scored ${shortest.totalWeight(st.index)}; ${shortest.shortestPathTo(st.index)}`);
-        }
+        // for (const st of sts) {
+        //     console.log(`${JSON.stringify(st.system)} scored ${shortest.totalWeight(st.index)}; ${shortest.shortestPathTo(st.index)}`);
+        // }
 
         return sts.map(st => {
             const score = Math.round(shortest.totalWeight(st.index));
@@ -366,4 +366,16 @@ class DijkstraCalculator4Fuel extends DijkstraCalculator {
     }
 }
 
-export { IEdge, ISystem, DijkstraCalculator, dijkstraCalculator, DijkstraShortestPathSolver, isSameRegion, isSameStar, isAdjacentRegion, calcExpectedJumps, Route, IRoute };
+export {
+    IEdge,
+    ISystem,
+    DijkstraCalculator,
+    dijkstraCalculator,
+    DijkstraShortestPathSolver,
+    isSameRegion,
+    isSameStar,
+    isAdjacentRegion,
+    calcExpectedJumps,
+    Route,
+    IRoute,
+};
