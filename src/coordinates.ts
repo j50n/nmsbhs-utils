@@ -165,13 +165,12 @@ class System {
     constructor(public readonly region: string, public readonly system: string, public readonly coords: Coordinates) {}
 
     public get label(): string {
-        console.log(`${this.region}:${this.system}:${this.coords}`);
         return `[${this.region.replace(/ /g, "\xA0")}] ${this.system.replace(/-/g, "‑").replace(/ /g, "\xA0")}`;
     }
 }
 
 class Hop {
-    constructor( public readonly blackhole: System, public readonly exit: System) {}
+    constructor(public readonly blackhole: System, public readonly exit: System) {}
 
     /**
      * Absolute distance moved toward the center from the black-hole to the exit.

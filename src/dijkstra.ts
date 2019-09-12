@@ -275,7 +275,7 @@ abstract class DijkstraCalculator {
             g.setEdges(node.index, node.edges);
         }
 
-        const shortest = g.calculateFor(dest.index);
+        const shortest: ShortestPaths = g.calculateFor(dest.index);
 
         for (const st of sts) {
             console.log(`${JSON.stringify(st.system)} scored ${shortest.totalWeight(st.index)}; ${shortest.shortestPathTo(st.index)}`);
