@@ -366,4 +366,4 @@ class DijkstraCalculator4Fuel extends DijkstraCalculator {
     }
 }
 
-export { IEdge, ISystem, DijkstraCalculator, dijkstraCalculator, DijkstraShortestPathSolver, isSameRegion, isSameStar, isAdjacentRegion, calcExpectedJumps };
+export { IEdge, ISystem, DijkstraCalculator, dijkstraCalculator, DijkstraShortestPathSolver, isSameRegion, isSameStar, isAdjacentRegion, calcExpectedJumps, Route, IRoute };
