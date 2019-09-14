@@ -1,7 +1,7 @@
 {
-    "name": "common",
-    "version": "1.0.2",
-    "description": "",
+    "name": "nmsbhs-utils",
+    "version": "1.0.6",
+    "description": "BlackHoleSuns navigation in No Man's Sky using Dijkstra's shortest path algorithm.",
     "main": "./lib/main/index.js",
     "browser": "./lib/browser/index.js",
     "scripts": {
@@ -13,7 +13,11 @@
         "test": "ts-node --project ./tsconfig.main.json ./node_modules/tape/bin/tape ./tests/**/*.ts"
     },
     "author": "Jason Smith",
-    "license": "ISC",
+    "license": "GPL-3.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/j50n/nmsbhs-utils.git"
+    },
     "devDependencies": {
         "@types/tape": "~4.2",
         "tape": "~4.11",
