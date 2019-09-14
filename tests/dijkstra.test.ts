@@ -28,7 +28,7 @@ function testGraph(): DijkstraShortestPathSolver {
 
 test("DirectedEdge toString", t => {
     const g = testGraph();
-    console.log(g.calculateFor(FullStack).shortestPathTo(CafeGrumpy));
+    t.deepEqual(g.calculateFor(FullStack).shortestPathTo(CafeGrumpy), [FullStack, Dubliner, InsomniaCookies, CafeGrumpy], "should find shortest path");
     t.end();
 });
 
@@ -60,25 +60,31 @@ test("Dijkstra Multipath 1", t => {
     t.end();
 });
 
-test("Dijkstra Multipath 2", t => {
+/**
+ * Verify that when given one path, the forward and backward implementations return the
+ * same best route.
+ */
+test("Dijkstra Backward/Forward Comparision", t => {
     const allHops = validHops();
 
-    const starts = [{ label: "Xenu's Start", coords: coordinates("038C:007E:039E:0079") }];
+    const start = { label: "Indium Mega-Mart", coords: coordinates("0643:0081:01A1:008A") };
 
     const dest = {
-        coords: coordinates("05A6:007D:034E:0079"),
-        label: "Xenu's Dest",
+        coords: coordinates("042F:0079:0D55:006A"),
+        label: "New Lennon",
     };
 
-    const t0 = Date.now();
-    dijkstraCalculator(allHops, 2000, "time")
-        .findRoute(starts, dest)
-        .forEach(rt => {
-            console.log(JSON.stringify(rt));
-        });
-    const t1 = Date.now();
+    const backRoutes = dijkstraCalculator(allHops, 2000, "time").findRoute([start], dest);
+    const forwardRoutes = dijkstraCalculator(allHops, 2000, "time").findRoutes(start, [dest]);
 
-    console.log(`${t1 - t0} milliseconds`);
+    console.error(`BACKWARD: ${backRoutes[0].score} ${backRoutes[0].route.map(leg => leg.label).join(" -> ")}`);
+    console.error(`FORWARD:  ${forwardRoutes[0].score} ${forwardRoutes[0].route.map(leg => leg.label).join(" -> ")}`);
+
+    t.equal(backRoutes.length, 1, "there should be one backward-route");
+    t.equal(forwardRoutes.length, 1, "there should be one forward-route");
+    t.equal(backRoutes[0].score, 37, "backward route score should be a specific, known value");
+
+    t.equal(forwardRoutes[0].score, backRoutes[0].score, "best route should give same score");
 
     t.end();
 });

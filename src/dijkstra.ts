@@ -157,7 +157,7 @@ function calcExpectedJumps(maxJumpRange: number, a: Coordinates, b: Coordinates)
     }
 }
 
-function dijkstraCalculator(galacticHops: Hop[], maxJumpRange: number, optimization: string): DijkstraCalculator {
+function dijkstraCalculator(galacticHops: Hop[], maxJumpRange: number, optimization: string = "fuel"): DijkstraCalculator {
     if (optimization === "fuel") {
         return new DijkstraCalculator4Fuel(galacticHops, maxJumpRange);
     } else if (optimization === "time") {
@@ -178,8 +178,32 @@ interface ISystemIndex {
     edges: IEdge[];
 }
 
+/**
+ * Calculate shortest paths using Dijkstra's shortest path algorithm.
+ */
 abstract class DijkstraCalculator {
     constructor(public galacticHops: Hop[], public maxJumpRange: number) {}
+
+    /**
+     * This finds the shortest route from each start to the destination and returns
+     * all routes, scored. Generally you want to pick the lowest scored route to travel.
+     *
+     * @param starts The list of starts.
+     * @param destination The destination.
+     */
+    public findRoute(starts: ISystem[], destination: ISystem): Route[] {
+        return new BackwardRouteFinder(this).findRoute(starts, destination);
+    }
+
+    /**
+     * This finds the shortest route from the start to each destination, scored.
+     *
+     * @param start The start.
+     * @param destinations The list of destinations.
+     */
+    public findRoutes(start: ISystem, destinations: ISystem[]): Route[] {
+        return new ForwardRouteFinder(this).findRoutes(start, destinations);
+    }
 
     public abstract blackHoleWeight(): number;
 
@@ -189,16 +213,191 @@ abstract class DijkstraCalculator {
 
     public abstract waypointWeight(): number;
 
-    public routeWeight(a: Coordinates, b: Coordinates): number {
+    public maxTravelRangeLY() {
+        return 100000;
+    }
+
+    public maxClosest() {
+        return 30;
+    }
+}
+
+/**
+ * Route-finder common stuff.
+ */
+abstract class AbstractRouteFinder {
+    constructor(public calculator: DijkstraCalculator) {}
+
+    protected get galacticHops(): Hop[] {
+        return this.calculator.galacticHops;
+    }
+
+    protected blackHoleWeight(): number {
+        return this.calculator.blackHoleWeight();
+    }
+
+    protected sameRegionWeight(): number {
+        return this.calculator.sameRegionWeight();
+    }
+
+    protected adjacentRegionWeight(): number {
+        return this.calculator.adjacentRegionWeight();
+    }
+
+    protected waypointWeight(): number {
+        return this.calculator.waypointWeight();
+    }
+
+    protected maxJumpRange(): number {
+        return this.calculator.maxJumpRange;
+    }
+
+    protected maxTravelRangeLY() {
+        return this.calculator.maxTravelRangeLY();
+    }
+
+    protected maxClosest() {
+        return 50;
+    }
+
+    protected closest(target: Coordinates, systems: ISystemIndex[]): ISystemIndex[] {
+        const range = this.maxTravelRangeLY() / 400;
+
+        const syss = systems
+            .filter(s => Math.abs(target.x - s.system.coords.x) <= range && Math.abs(target.z - s.system.coords.z) <= range)
+            .filter(s => !segmentIntersectsSphere(s.system.coords, target, GalacticCenter, 7))
+            .map(s => {
+                return {
+                    system: s,
+                    dist: target.dist2Sq(s.system.coords),
+                };
+            });
+
+        return syss
+            .sort((a, b) => a.dist - b.dist)
+            .map(a => a.system)
+            .slice(0, this.maxClosest());
+    }
+
+    protected routeWeight(a: Coordinates, b: Coordinates): number {
         if (isSameStar(a, b)) {
             return 0;
         } else if (isSameRegion(a, b)) {
-            return this.sameRegionWeight();
+            return this.sameRegionWeight() + 0.0000001;
         } else if (isAdjacentRegion(a, b)) {
-            return Math.max(this.adjacentRegionWeight(), calcExpectedJumps(this.maxJumpRange, a, b));
+            return Math.max(this.adjacentRegionWeight(), calcExpectedJumps(this.maxJumpRange(), a, b)) + 0.00001;
         } else {
-            return this.waypointWeight() + calcExpectedJumps(this.maxJumpRange, a, b);
+            return this.waypointWeight() + calcExpectedJumps(this.maxJumpRange(), a, b) + 0.001;
         }
+    }
+
+    protected giveNodesMinimumWeight(nodes: ISystemIndex[]): void {
+        for (const [i, node] of nodes.entries()) {
+            node.index = i;
+
+            /*
+             * Edges have minimal non-zero weight.
+             * This prevents ties between shorter and longer paths when edge weights can be 0.
+             */
+            node.edges.forEach(e => {
+                if (e.weight === 0) {
+                    e.weight += 0.000000001;
+                }
+            });
+        }
+    }
+}
+
+/**
+ * Find routes forward so that you have one start and a bunch of destinations
+ * to choose from.
+ */
+class ForwardRouteFinder extends AbstractRouteFinder {
+    constructor(public calculator: DijkstraCalculator) {
+        super(calculator);
+    }
+
+    public findRoutes(start: ISystem, destinations: ISystem[]): Route[] {
+        /* All nodes; this is the indexed array. */
+        const nodes: ISystemIndex[] = [];
+
+        /* Just the black holes. */
+        const bhs: ISystemIndex[] = [];
+        /* Just the exits. */
+        const exits: ISystemIndex[] = [];
+        /* Destination/bases. */
+        const dts: ISystemIndex[] = [];
+
+        /* Destination. */
+        const startSystem: ISystemIndex = { index: -1, system: start, edges: [] };
+
+        nodes.push(startSystem);
+
+        for (const destination of destinations) {
+            const dt = { index: -1, system: destination, edges: [] };
+            nodes.push(dt);
+            dts.push(dt);
+        }
+
+        for (const hop of this.galacticHops) {
+            const ex = { index: -1, system: hop.exit, edges: [] };
+            nodes.push(ex);
+            exits.push(ex);
+            const exIndex = nodes.length - 1;
+
+            const bh = { index: nodes.length, system: hop.blackhole, edges: [{ node: exIndex, weight: this.blackHoleWeight() }] };
+            nodes.push(bh);
+            bhs.push(bh);
+
+            startSystem.edges.push({ node: bh.index, weight: this.routeWeight(bh.system.coords, startSystem.system.coords) });
+        }
+
+        this.giveNodesMinimumWeight(nodes);
+
+        for (const exit of exits) {
+            const bhEdges = this.closest(exit.system.coords, bhs).map(s => {
+                return { node: s.index, weight: this.routeWeight(exit.system.coords, s.system.coords) };
+            });
+
+            exit.edges = bhEdges;
+        }
+
+        for (const exit of exits) {
+            for (const dest of dts) {
+                if (!segmentIntersectsSphere(exit.system.coords, dest.system.coords, GalacticCenter, 7)) {
+                    exit.edges.push({ node: dest.index, weight: this.routeWeight(dest.system.coords, exit.system.coords) });
+                }
+            }
+            exit.edges.push({ node: startSystem.index, weight: this.routeWeight(startSystem.system.coords, exit.system.coords) });
+        }
+
+        const g = new DijkstraShortestPathSolver(nodes.length);
+        for (const node of nodes) {
+            g.setEdges(node.index, node.edges);
+        }
+
+        const shortest: ShortestPaths = g.calculateFor(startSystem.index);
+
+        return dts.map(st => {
+            const score = Math.round(shortest.totalWeight(st.index));
+
+            const route = shortest
+                .shortestPathTo(st.index)
+                .map(node => nodes[node])
+                .map(node => node.system);
+
+            return new Route(score, route);
+        });
+    }
+}
+
+/**
+ * Find route backwards (original way) so that you have multiple start
+ * locations and one destination.
+ */
+class BackwardRouteFinder extends AbstractRouteFinder {
+    constructor(public calculator: DijkstraCalculator) {
+        super(calculator);
     }
 
     public findRoute(starts: ISystem[], destination: ISystem): Route[] {
@@ -234,19 +433,7 @@ abstract class DijkstraCalculator {
             exits.push(ex);
         }
 
-        for (const [i, node] of nodes.entries()) {
-            node.index = i;
-
-            /*
-             * Edges have minimal non-zero weight.
-             * This prevents ties between shorter and longer paths when edge weights can be 0.
-             */
-            node.edges.forEach(e => {
-                if (e.weight === 0) {
-                    e.weight += 0.000001;
-                }
-            });
-        }
+        this.giveNodesMinimumWeight(nodes);
 
         for (const bh of bhs) {
             const exitEdges = this.closest(bh.system.coords, exits).map(s => {
@@ -277,10 +464,6 @@ abstract class DijkstraCalculator {
 
         const shortest: ShortestPaths = g.calculateFor(dest.index);
 
-        // for (const st of sts) {
-        //     console.log(`${JSON.stringify(st.system)} scored ${shortest.totalWeight(st.index)}; ${shortest.shortestPathTo(st.index)}`);
-        // }
-
         return sts.map(st => {
             const score = Math.round(shortest.totalWeight(st.index));
 
@@ -292,33 +475,6 @@ abstract class DijkstraCalculator {
 
             return new Route(score, route);
         });
-    }
-
-    protected maxTravelRangeLY() {
-        return 100000;
-    }
-
-    protected maxClosest() {
-        return 50;
-    }
-
-    protected closest(target: Coordinates, systems: ISystemIndex[]): ISystemIndex[] {
-        const range = this.maxTravelRangeLY() / 400;
-
-        const syss = systems
-            .filter(s => Math.abs(target.x - s.system.coords.x) <= range && Math.abs(target.z - s.system.coords.z) <= range)
-            .filter(s => !segmentIntersectsSphere(s.system.coords, target, GalacticCenter, 7))
-            .map(s => {
-                return {
-                    system: s,
-                    dist: target.dist2Sq(s.system.coords),
-                };
-            });
-
-        return syss
-            .sort((a, b) => a.dist - b.dist)
-            .map(a => a.system)
-            .slice(0, this.maxClosest());
     }
 }
 
