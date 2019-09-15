@@ -1,11 +1,11 @@
 {
     "name": "nmsbhs-utils",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "BlackHoleSuns navigation in No Man's Sky using Dijkstra's shortest path algorithm.",
     "main": "./lib/main/index.js",
     "browser": "./lib/browser/index.js",
     "scripts": {
-        "install": " npm run build-for-browser; npm run build-for-node",
+        "install": "tsc -p tsconfig.browser.json && tsc -p tsconfig.main.json",
         "clean": "rm -rf ./lib",
         "build-for-browser": "tsc -p ./tsconfig.browser.json",
         "build-for-node": "tsc -p ./tsconfig.main.json",
