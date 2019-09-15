@@ -355,8 +355,8 @@ class ForwardRouteFinder extends AbstractRouteFinder {
         this.giveNodesMinimumWeight(nodes);
 
         for (const exit of exits) {
-            const bhEdges = this.closest(exit.system.coords, bhs).map(s => {
-                return { node: s.index, weight: this.routeWeight(exit.system.coords, s.system.coords) };
+            const bhEdges = this.closest(exit.system.coords, bhs).map(bh => {
+                return { node: bh.index, weight: this.routeWeight(exit.system.coords, bh.system.coords) };
             });
 
             exit.edges = bhEdges;
@@ -368,7 +368,10 @@ class ForwardRouteFinder extends AbstractRouteFinder {
                     exit.edges.push({ node: dest.index, weight: this.routeWeight(dest.system.coords, exit.system.coords) });
                 }
             }
-            startSystem.edges.push({ node: exit.index, weight: this.routeWeight(startSystem.system.coords, exit.system.coords) });
+        }
+
+        for (const exit of exits) {
+            exit.edges.push({ node: startSystem.index, weight: this.routeWeight(startSystem.system.coords, exit.system.coords) });
         }
 
         const g = new DijkstraShortestPathSolver(nodes.length);
