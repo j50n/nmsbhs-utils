@@ -368,7 +368,7 @@ class ForwardRouteFinder extends AbstractRouteFinder {
                     exit.edges.push({ node: dest.index, weight: this.routeWeight(dest.system.coords, exit.system.coords) });
                 }
             }
-            exit.edges.push({ node: startSystem.index, weight: this.routeWeight(startSystem.system.coords, exit.system.coords) });
+            startSystem.edges.push({ node: exit.index, weight: this.routeWeight(startSystem.system.coords, exit.system.coords) });
         }
 
         const g = new DijkstraShortestPathSolver(nodes.length);
