@@ -1,10 +1,16 @@
-declare class Coordinates {
+interface ICoordinates {
     readonly x: number;
     readonly y: number;
     readonly z: number;
-    readonly system: number;
-    constructor(x: number, y: number, z: number, system: number);
     readonly s: number;
+}
+declare class Coordinates implements ICoordinates {
+    readonly x: number;
+    readonly y: number;
+    readonly z: number;
+    readonly s: number;
+    constructor(x: number, y: number, z: number, s: number);
+    readonly system: number;
     toString(): string;
     galacticCoordinates(planet: number): string;
     dist2Center(): number;
@@ -13,7 +19,7 @@ declare class Coordinates {
     readonly radial: number;
 }
 declare const reCoordInput: string;
-declare function coordinates(text: string): Coordinates;
+declare function coordinates(text: string | ICoordinates): Coordinates;
 declare const GalacticCenter: Coordinates;
 declare enum Platform {
     PS4 = "PS4",

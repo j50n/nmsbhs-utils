@@ -1,7 +1,14 @@
 type Coords = [number, number, number, number];
 
-class Coordinates {
-    constructor(public readonly x: number, public readonly y: number, public readonly z: number, public readonly system: number) {
+interface ICoordinates {
+    readonly x: number;
+    readonly y: number;
+    readonly z: number;
+    readonly s: number;
+}
+
+class Coordinates implements ICoordinates {
+    constructor(public readonly x: number, public readonly y: number, public readonly z: number, public readonly s: number) {
         if (!Number.isInteger(x)) {
             throw new RangeError(`x must be an integer value: ${x}`);
         }
@@ -11,8 +18,8 @@ class Coordinates {
         if (!Number.isInteger(z)) {
             throw new RangeError(`z must be an integer value: ${z}`);
         }
-        if (!Number.isInteger(system)) {
-            throw new RangeError(`system must be an integer value: ${system}`);
+        if (!Number.isInteger(s)) {
+            throw new RangeError(`system must be an integer value: ${s}`);
         }
 
         if (x < 0 || x > 0xfff) {
@@ -24,13 +31,13 @@ class Coordinates {
         if (z < 0 || z > 0xfff) {
             throw new RangeError(`z must be in range 0x0 to 0xFFF: 0x${z.toString(16)}`);
         }
-        if (system < 0 || system > 0x2ff) {
-            throw new RangeError(`system must be in range 0x0 to 0x2FF: 0x${system.toString(16)}`);
+        if (s < 0 || s > 0x2ff) {
+            throw new RangeError(`system must be in range 0x0 to 0x2FF: 0x${s.toString(16)}`);
         }
     }
 
-    public get s(): number {
-        return this.system;
+    public get system(): number {
+        return this.s;
     }
 
     public toString() {
@@ -42,7 +49,7 @@ class Coordinates {
             return n;
         }
 
-        return `${f(this.x)}:${f(this.y)}:${f(this.z)}:${f(this.system)}`;
+        return `${f(this.x)}:${f(this.y)}:${f(this.z)}:${f(this.s)}`;
     }
 
     // [P][SSS][YY][ZZZ][XXX] – (P = Planet Index / S = Star System Index / Y = Height / Z = Width / X = Length)
@@ -68,7 +75,7 @@ class Coordinates {
         }
 
         const p = planet.toString(16);
-        const s = trunc(this.system.toString(16), 3);
+        const s = trunc(this.s.toString(16), 3);
         const y = trunc((this.y + 0x81).toString(16), 2);
         const z = trunc((this.z + 0x801).toString(16), 3);
         const x = trunc((this.x + 0x801).toString(16), 3);
@@ -122,36 +129,40 @@ const reCoordFlat4 = new RegExp(`^${reCoordFlat4Pattern}$`, "i"); // /^([0-9a-f]
 
 const reCoordInput = `^(${reCoord3Pattern})|(${reCoord4Pattern})|(${reCoordFlat3Pattern})|(${reCoordFlat4Pattern})$`.replace(/a-f/g, "a-fA-F");
 
-function coordinates(text: string): Coordinates {
-    function interpret(pts: string[] | null): Coords | null {
-        if (pts === null) {
-            return null;
-        } else {
-            const pt = pts.slice(1, 5).map(i => parseInt(i, 16));
-            if (pt.length === 3) {
-                pt.push(0x0000);
+function coordinates(text: string | ICoordinates): Coordinates {
+    if (typeof text === "string") {
+        function interpret(pts: string[] | null): Coords | null {
+            if (pts === null) {
+                return null;
+            } else {
+                const pt = pts.slice(1, 5).map(i => parseInt(i, 16));
+                if (pt.length === 3) {
+                    pt.push(0x0000);
+                }
+                return pt as Coords;
             }
-            return pt as Coords;
         }
-    }
 
-    const t = text.trim();
+        const t = text.trim();
 
-    let parts = interpret(reCoord3.exec(t));
-    if (parts == null) {
-        parts = interpret(reCoord4.exec(t));
-    }
-    if (parts == null) {
-        parts = interpret(reCoordFlat3.exec(t));
-    }
-    if (parts == null) {
-        parts = interpret(reCoordFlat4.exec(t));
-    }
+        let parts = interpret(reCoord3.exec(t));
+        if (parts == null) {
+            parts = interpret(reCoord4.exec(t));
+        }
+        if (parts == null) {
+            parts = interpret(reCoordFlat3.exec(t));
+        }
+        if (parts == null) {
+            parts = interpret(reCoordFlat4.exec(t));
+        }
 
-    if (parts == null) {
-        throw new SyntaxError(`not valid galactic coordinates: '${t}'`);
+        if (parts == null) {
+            throw new SyntaxError(`not valid galactic coordinates: '${t}'`);
+        } else {
+            return new Coordinates(...parts);
+        }
     } else {
-        return new Coordinates(...parts);
+        return new Coordinates(text.x, text.y, text.z, text.s);
     }
 }
 
