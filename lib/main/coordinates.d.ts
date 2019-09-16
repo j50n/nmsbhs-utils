@@ -4,6 +4,7 @@ declare class Coordinates {
     readonly z: number;
     readonly system: number;
     constructor(x: number, y: number, z: number, system: number);
+    readonly s: number;
     toString(): string;
     galacticCoordinates(planet: number): string;
     dist2Center(): number;

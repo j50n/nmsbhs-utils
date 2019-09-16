@@ -1,5 +1,3 @@
-import { lazily } from "./utils";
-
 type Coords = [number, number, number, number];
 
 class Coordinates {
@@ -29,6 +27,10 @@ class Coordinates {
         if (system < 0 || system > 0x2ff) {
             throw new RangeError(`system must be in range 0x0 to 0x2FF: 0x${system.toString(16)}`);
         }
+    }
+
+    public get s(): number {
+        return this.system;
     }
 
     public toString() {
