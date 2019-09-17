@@ -51,8 +51,6 @@ declare abstract class DijkstraCalculator {
     abstract sameRegionWeight(): number;
     abstract adjacentRegionWeight(): number;
     abstract waypointWeight(): number;
-    maxTravelRangeLY(): number;
-    maxClosest(): number;
 }
 export { IEdge, ISystem, DijkstraCalculator, dijkstraCalculator, DijkstraShortestPathSolver, isSameRegion, isSameStar, isAdjacentRegion, calcExpectedJumps, Route, IRoute, };
 //# sourceMappingURL=dijkstra.d.ts.map

@@ -41,24 +41,24 @@ test("DirectedEdge toString", t => {
     t.end();
 });
 
-// test("Dijkstra Multipath (Original)", t => {
-//     const starts: ISystem[] = [HermitsHome, HermitsLostDiplos, GekShrine, VykeenShrine, IndiumMegaMart];
+test("Dijkstra Multipath (Original)", t => {
+    const starts: ISystem[] = [HermitsHome, HermitsLostDiplos, GekShrine, VykeenShrine, IndiumMegaMart];
 
-//     const dest: ISystem = NewLennon;
+    const dest: ISystem = NewLennon;
 
-//     const allHops = validHops();
+    const allHops = validHops();
 
-//     const t0 = Date.now();
-//     const calc = dijkstraCalculator(allHops, 2000, "time");
-//     calc.findRoute(starts, dest).forEach(rt => {
-//         console.log(JSON.stringify(rt));
-//     });
-//     const t1 = Date.now();
+    const t0 = Date.now();
+    const calc = dijkstraCalculator(allHops, 2000, "time");
+    calc.findRoute(starts, dest).forEach(rt => {
+        console.log(JSON.stringify(rt));
+    });
+    const t1 = Date.now();
 
-//     console.log(`${t1 - t0} milliseconds`);
+    console.log(`${t1 - t0} milliseconds`);
 
-//     t.end();
-// });
+    t.end();
+});
 
 /**
  * This uses forward and backward routing to verify one another. In the simplest case,
@@ -86,6 +86,8 @@ test("Dijkstra Backward/Forward Comparisions", t => {
 
         const backNames = backRoutes[0].route.map(leg => leg.label);
         const forwNames = forwardRoutes[0].route.map(leg => leg.label);
+        console.log(backNames.join("->"));
+        console.log(forwNames.join("->"));
 
         t.deepEqual(forwNames, backNames, `[${name}] routes should match by name`);
 

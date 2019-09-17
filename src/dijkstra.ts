@@ -212,14 +212,6 @@ abstract class DijkstraCalculator {
     public abstract adjacentRegionWeight(): number;
 
     public abstract waypointWeight(): number;
-
-    public maxTravelRangeLY() {
-        return 100000;
-    }
-
-    public maxClosest() {
-        return 30;
-    }
 }
 
 /**
@@ -252,31 +244,63 @@ abstract class AbstractRouteFinder {
         return this.calculator.maxJumpRange;
     }
 
-    protected maxTravelRangeLY() {
-        return this.calculator.maxTravelRangeLY();
+    /**
+     * Index systems by their `x` coordinate.
+     *
+     * This is a simple way to index by position so I can find [closest()]
+     * systems faster.
+     *
+     * @param systems Original, unindexed systems.
+     */
+    protected systemsByX(systems: ISystemIndex[]): ISystemIndex[][] {
+        const result: ISystemIndex[][] = [];
+        for (let i = 0; i <= 0xfff; i++) {
+            result.push([]);
+        }
+        for (const system of systems) {
+            result[system.system.coords.x].push(system);
+        }
+        return result;
     }
 
-    protected maxClosest() {
-        return 50;
-    }
+    /**
+     * Find the closest systems to the given system.
+     * @param target Target system.
+     * @param systemsByX Systems pre-indexed by `x` value.
+     */
+    protected closest(target: Coordinates, systemsByX: ISystemIndex[][]): ISystemIndex[] {
+        const MinCount = 15;
+        const MaxCount = 30;
 
-    protected closest(target: Coordinates, systems: ISystemIndex[]): ISystemIndex[] {
-        const range = this.maxTravelRangeLY() / 400;
+        let range = 50000 / 400;
+        let retries = 0;
 
-        const syss = systems
-            .filter(s => Math.abs(target.x - s.system.coords.x) <= range && Math.abs(target.z - s.system.coords.z) <= range)
-            .filter(s => !segmentIntersectsSphere(s.system.coords, target, GalacticCenter, 7))
-            .map(s => {
-                return {
-                    system: s,
-                    dist: target.dist2Sq(s.system.coords),
-                };
-            });
+        let syss = [];
+        do {
+            const sysarrs: ISystemIndex[][] = [];
+            for (let i = Math.max(target.x - range, 0); i <= Math.min(target.x + range, 0xfff); i++) {
+                sysarrs.push(systemsByX[i].filter(s => Math.abs(target.z - s.system.coords.z) <= range));
+            }
+
+            const systems: ISystemIndex[] = ([] as ISystemIndex[]).concat(...sysarrs);
+
+            syss = systems
+                .filter(s => !segmentIntersectsSphere(s.system.coords, target, GalacticCenter, 7))
+                .map(s => {
+                    return {
+                        system: s,
+                        dist: target.dist2Sq(s.system.coords),
+                    };
+                });
+
+            range *= 2;
+            retries += 1;
+        } while (retries < 3 && syss.length < MinCount);
 
         return syss
             .sort((a, b) => a.dist - b.dist)
             .map(a => a.system)
-            .slice(0, this.maxClosest());
+            .slice(0, MaxCount);
     }
 
     protected routeWeight(a: Coordinates, b: Coordinates): number {
@@ -331,6 +355,7 @@ class ForwardRouteFinder extends AbstractRouteFinder {
         /* Destination. */
         const startSystem: ISystemIndex = { index: -1, system: start, edges: [] };
 
+        const ta = new Date();
         nodes.push(startSystem);
 
         for (const destination of destinations) {
@@ -353,15 +378,23 @@ class ForwardRouteFinder extends AbstractRouteFinder {
         }
 
         this.giveNodesMinimumWeight(nodes);
+        const tb = new Date();
+        console.error(`setup took ${tb.getTime() - ta.getTime()}`);
 
+        const t1 = new Date();
+
+        const bhsByX = this.systemsByX(bhs);
         for (const exit of exits) {
-            const bhEdges = this.closest(exit.system.coords, bhs).map(bh => {
+            const bhEdges = this.closest(exit.system.coords, bhsByX).map(bh => {
                 return { node: bh.index, weight: this.routeWeight(exit.system.coords, bh.system.coords) };
             });
 
             exit.edges = bhEdges;
         }
+        const t2 = new Date();
+        console.error(`weights took ${t2.getTime() - t1.getTime()}`);
 
+        const ti = new Date();
         for (const exit of exits) {
             for (const dest of dts) {
                 if (!segmentIntersectsSphere(exit.system.coords, dest.system.coords, GalacticCenter, 7)) {
@@ -369,17 +402,22 @@ class ForwardRouteFinder extends AbstractRouteFinder {
                 }
             }
         }
+        const tj = new Date();
+        console.error(`dest weights took ${tj.getTime() - ti.getTime()}`);
 
         for (const dt of dts) {
             startSystem.edges.push({ node: dt.index, weight: this.routeWeight(startSystem.system.coords, dt.system.coords) });
         }
 
+        const tx = new Date();
         const g = new DijkstraShortestPathSolver(nodes.length);
         for (const node of nodes) {
             g.setEdges(node.index, node.edges);
         }
 
         const shortest: ShortestPaths = g.calculateFor(startSystem.index);
+        const ty = new Date();
+        console.error(`calculation took ${ty.getTime() - tx.getTime()}`);
 
         return dts.map(st => {
             const score = Math.round(shortest.totalWeight(st.index));
@@ -438,8 +476,9 @@ class BackwardRouteFinder extends AbstractRouteFinder {
 
         this.giveNodesMinimumWeight(nodes);
 
+        const exitsByX = this.systemsByX(exits);
         for (const bh of bhs) {
-            const exitEdges = this.closest(bh.system.coords, exits).map(s => {
+            const exitEdges = this.closest(bh.system.coords, exitsByX).map(s => {
                 return { node: s.index, weight: this.routeWeight(bh.system.coords, s.system.coords) };
             });
 
