@@ -355,7 +355,6 @@ class ForwardRouteFinder extends AbstractRouteFinder {
         /* Destination. */
         const startSystem: ISystemIndex = { index: -1, system: start, edges: [] };
 
-        const ta = new Date();
         nodes.push(startSystem);
 
         for (const destination of destinations) {
@@ -378,10 +377,6 @@ class ForwardRouteFinder extends AbstractRouteFinder {
         }
 
         this.giveNodesMinimumWeight(nodes);
-        const tb = new Date();
-        console.error(`setup took ${tb.getTime() - ta.getTime()}`);
-
-        const t1 = new Date();
 
         const bhsByX = this.systemsByX(bhs);
         for (const exit of exits) {
@@ -391,10 +386,7 @@ class ForwardRouteFinder extends AbstractRouteFinder {
 
             exit.edges = bhEdges;
         }
-        const t2 = new Date();
-        console.error(`weights took ${t2.getTime() - t1.getTime()}`);
 
-        const ti = new Date();
         for (const exit of exits) {
             for (const dest of dts) {
                 if (!segmentIntersectsSphere(exit.system.coords, dest.system.coords, GalacticCenter, 7)) {
@@ -402,22 +394,17 @@ class ForwardRouteFinder extends AbstractRouteFinder {
                 }
             }
         }
-        const tj = new Date();
-        console.error(`dest weights took ${tj.getTime() - ti.getTime()}`);
 
         for (const dt of dts) {
             startSystem.edges.push({ node: dt.index, weight: this.routeWeight(startSystem.system.coords, dt.system.coords) });
         }
 
-        const tx = new Date();
         const g = new DijkstraShortestPathSolver(nodes.length);
         for (const node of nodes) {
             g.setEdges(node.index, node.edges);
         }
 
         const shortest: ShortestPaths = g.calculateFor(startSystem.index);
-        const ty = new Date();
-        console.error(`calculation took ${ty.getTime() - tx.getTime()}`);
 
         return dts.map(st => {
             const score = Math.round(shortest.totalWeight(st.index));
