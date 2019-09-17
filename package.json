@@ -1,6 +1,6 @@
 {
     "name": "nmsbhs-utils",
-    "version": "1.1.5",
+    "version": "1.1.6",
     "description": "BlackHoleSuns navigation in No Man's Sky using Dijkstra's shortest path algorithm.",
     "main": "./lib/main/index.js",
     "browser": "./lib/browser/index.js",
