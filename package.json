@@ -1,6 +1,6 @@
 {
     "name": "nmsbhs-utils",
-    "version": "1.1.8",
+    "version": "1.1.9",
     "description": "BlackHoleSuns navigation in No Man's Sky using Dijkstra's shortest path algorithm.",
     "main": "./lib/main/index.js",
     "browser": "./lib/browser/index.js",
@@ -21,7 +21,7 @@
         "@types/tape": "~4.2",
         "tape": "~4.11",
         "ts-node": "~8.3",
-        "typescript": "~3.6"
+        "typescript": "~3.7"
     },
     "dependencies": {
         "@types/deep-equal": "~1.0",

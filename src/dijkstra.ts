@@ -269,8 +269,8 @@ abstract class AbstractRouteFinder {
      * @param systemsByX Systems pre-indexed by `x` value.
      */
     protected closest(target: Coordinates, systemsByX: ISystemIndex[][]): ISystemIndex[] {
-        const MinCount = 15;
-        const MaxCount = 30;
+        const MinCount = 20;
+        const MaxCount = 150;
 
         let range = 50000 / 400;
         let retries = 0;
